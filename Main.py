@@ -10,7 +10,7 @@ def read_data():
 
 def main():
     ds = read_data()
-    print(ds)
+    # print(ds)
 
 if __name__ == "__main__":
     main()
