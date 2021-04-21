@@ -3,14 +3,14 @@ import pandas as pd
 
 data_path = "./files/database.sqlite"
 
-def read_data():
+def read_data(query):
     # Create a SQL connection to our SQLite database
     con = sqlite3.connect(data_path)
-    return pd.read_sql_query("SELECT * FROM Country", con)
+    return pd.read_sql_query(query, con)
 
 def main():
-    ds = read_data()
-    # print(ds)
+    ds_contries = read_data("SELECT * FROM Country")
+    print(ds_contries)
 
 if __name__ == "__main__":
     main()
