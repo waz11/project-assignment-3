@@ -14,6 +14,7 @@ def get_table(query):
     # Create a SQL connection to our SQLite database
     con = sqlite3.connect(data_path)
     data = pd.read_sql_query(query, con)
+    con.close()
     return fillMissingValues(data)
 
 
