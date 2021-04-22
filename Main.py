@@ -2,7 +2,12 @@ import ReadData
 
 def main():
     match, player, player_attributes, team, team_attributes, country = ReadData.getTables()
-    print(match)
+    # print("match" + str(match.columns.values))
+    # print("player" + str(player.columns.values))
+    # print("player_attributes" + str(player_attributes.columns.values))
+    # print("team" + str(team.columns.values))
+    # print("team_attributes" + str(team_attributes.columns.values))
+    # print("country" + str(country.columns.values))
 
 
 if __name__ == "__main__":

@@ -13,7 +13,8 @@ def fillMissingValues(df):
 def __get_table(query):
     # Create a SQL connection to our SQLite database
     con = sqlite3.connect(data_path)
-    df = pd.read_sql_query(query, con)
+    table = pd.read_sql_query(query, con)
+    df = pd.DataFrame(table)
     con.close()
     return df
 
@@ -24,7 +25,6 @@ def getTables():
     team = __get_table("SELECT * FROM Team")
     team_attributes = __get_table("SELECT * FROM Team_Attributes")
     country = __get_table("SELECT * FROM Country")
-
     return match, player, player_attributes, team, team_attributes, country
 
 
