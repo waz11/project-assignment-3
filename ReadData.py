@@ -11,7 +11,6 @@ def fillMissingValues(df):
     return df;
 
 def __get_table(query):
-    # Create a SQL connection to our SQLite database
     con = sqlite3.connect(data_path)
     table = pd.read_sql_query(query, con)
     df = pd.DataFrame(table)
