@@ -12,8 +12,10 @@ FROM Match \
 JOIN League,Country \
 ON Country.id = Match.country_id and League.id = Match.league_id \
 LEFT JOIN Team AS HomeTeam ON HomeTeam.team_api_id = Match.home_team_api_id \
-LEFT JOIN Team as AwayTeam ON AwayTeam.team_api_id = Match.away_team_api_id")
+LEFT JOIN Team as AwayTeam ON AwayTeam.team_api_id = Match.away_team_api_id \
+WHERE Match.season <> '2015/2016'")
     print(dataTable)
+
 
 if __name__ == "__main__":
     main()
