@@ -1,10 +1,7 @@
 import Data
 
 def main():
-    data = Data.get_data_frames()
-    print(data.keys())
-    for df in data.values():
-        Data.fillMissingValues(df)
+    match, player, player_attributes, team, team_attributes, country = Data.get_data()
 
 if __name__ == "__main__":
     main()
