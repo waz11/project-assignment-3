@@ -1,6 +1,6 @@
 import sqlite3
 import pandas as pd
-import numpy as np
+# import numpy as np
 
 data_path = "./files/database.sqlite"
 tables = ['match', 'player', 'player_attributes', 'team', 'team_attributes', 'country']

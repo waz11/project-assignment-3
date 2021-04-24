@@ -1,7 +1,14 @@
+import numpy as np
 import Data
 
 def main():
+    # read data
     match, player, player_attributes, team, team_attributes, country = Data.get_data()
+    # queries
+    match.query('season != "2015/2016"', inplace=True)
+
+    # print(match)
+
 
 if __name__ == "__main__":
     main()
