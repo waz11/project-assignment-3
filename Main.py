@@ -1,13 +1,15 @@
 import Data
+import pandas as pd
 
 def main():
     # read data
-    match, player, player_attributes, team, team_attributes, country = Data.get_data()
+    match, player, player_attributes, team, team_attributes, league, country = Data.get_data()
     # queries
     match.query('season != "2015/2016"', inplace=True)
 
-    # print(match)
-
+    # build a data frame:
+    temp = pd.merge(match,country,left_on='country_id',right_on='id', how='left')
+    # print(temp)
 
 if __name__ == "__main__":
     main()

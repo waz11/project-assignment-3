@@ -1,9 +1,9 @@
 import sqlite3
 import pandas as pd
-# import numpy as np
+import numpy as np
 
 data_path = "./files/database.sqlite"
-tables = ['match', 'player', 'player_attributes', 'team', 'team_attributes', 'country']
+tables = ['match', 'player', 'player_attributes', 'team', 'team_attributes','league', 'country']
 
 def fillMissingValues(df):
     for col in df.columns:
@@ -28,8 +28,9 @@ def get_data():
     player_attributes = df['player_attributes']
     team = df['team']
     team_attributes = df['team_attributes']
+    league = df['league']
     country = df['country']
-    return match, player,player_attributes, team, team_attributes, country
+    return match, player,player_attributes, team, team_attributes,league, country
 
 
 
