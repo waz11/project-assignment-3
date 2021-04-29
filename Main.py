@@ -3,11 +3,12 @@ import pandas as pn
 import numpy as np
 # import logisticRegressionModel
 # import  turicreate as tc
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
-from sklearn import preprocessing
+# from sklearn.feature_selection import SelectKBest
+# from sklearn.feature_selection import chi2
+# from sklearn import preprocessing
 
 def main():
+
     # load tables
     match = ReadData.get_table("select * from Match where season != '2015/2016'")
     player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
@@ -91,10 +92,19 @@ def main():
     non_norm = selected_season_league_attributes+game_result+teams_names
     df_non_norm = df_match[non_norm]
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
-    print(full_df)
+    # print(full_df)
     full_df.to_csv("./files/df_full.csv")
     # evaluate = logisticRegressionModel.modelLogicReg(full_df)
     # print(evaluate)
+
+
+    # player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
+    # player = ReadData.get_table("SELECT * FROM Player")
+    # df = pn.concat([player, player_attributes], 1)
+    # query = ReadData.get_table("SELECT * FROM Player, Player_Attributes WHERE Player.player_api_id == Player_Attributes.player_api_id")
+    # dfPlayers = pn.DataFrame(query)
+    #
+    # dfPlayers.to_csv("./files/dfPlayers.csv")
 
 
 
