@@ -10,13 +10,14 @@ import numpy as np
 def main():
 
     # load tables
-    match = ReadData.get_table("select * from Match where season != '2015/2016'")
+    match = ReadData.get_table("select * from Match")
+    # " where season != '2015/2016'")
     player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
     team = ReadData.get_table("SELECT * FROM Team")
     df_league = ReadData.get_table("SELECT * FROM League")
-    team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
+    # team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
 
-    # calculated score performance  of players
+    # calculated score performance of players - mean for each player
     selected_player_attributes = ['overall_rating']
     mean_rating = player_attributes.groupby('player_api_id')[selected_player_attributes].mean()
 
