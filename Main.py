@@ -12,7 +12,10 @@ import knnModel as kn
 
 def main():
     # load tables
+
+    # Regular Table:
     # match = ReadData.get_table("select * from Match")
+    # Big Table:
     match = ReadData.get_table("SELECT Match.*,HomeTeam.buildUpPlayDribbling AS Home_Team_buildUpPlayDribbling, \
     HomeTeam.buildUpPlayPassing AS Home_Team_buildUpPlayPassing, HomeTeam.buildUpPlaySpeed AS Home_Team_buildUpPlaySpeed,\
     HomeTeam.chanceCreationCrossing AS Home_Team_chanceCreationCrossing ,HomeTeam.chanceCreationPassing AS Home_Team_chanceCreationPassing,\
@@ -72,16 +75,19 @@ def main():
                                   suffixes=(None, str(idx + 1) + '_away'))
     df_match = df_match.rename(columns={'overall_rating': 'overall_rating1_away'}, inplace=False)
 
-    selected_team_attributes = ['home_team', 'away_team', 'home_team_goal','away_team_goal', 'result', \
-    'buildUpPlaySpeedHome', 'buildUpPlayPassingHome', 'defencePressureHome', 'buildUpPlaySpeedAway',
-    'buildUpPlayPassingAway', 'defencePressureAway']
-
-
+    selected_team_attributes = ['Home_Team_buildUpPlayDribbling', 'Home_Team_buildUpPlayPassing', 'Home_Team_buildUpPlaySpeed',\
+    'Home_Team_chanceCreationCrossing' , 'Home_Team_chanceCreationPassing','Home_Team_chanceCreationShooting', \
+    'Home_Team_defenceAggression', 'Home_Team_defencePressure','Home_Team_defenceTeamWidth','Away_Team_buildUpPlayDribbling',\
+    'Away_Team_buildUpPlayPassing','Away_Team_buildUpPlaySpeed','Away_Team_chanceCreationCrossing','Away_Team_chanceCreationPassing',\
+    'Away_Team_chanceCreationShooting','Away_Team_defenceAggression','Away_Team_defencePressure','Away_Team_defenceTeamWidth']
 
     avg_team_preformance = ['avg_home_preformance','avg_away_preformance']
+    #without season:
     # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result
-    selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
-    # selected_relevant_feature2 = bet_features + avg_team_preformance + selected_team_attributes + selected_season_league_attributes + game_result
+    # Old One:
+    # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
+    # New one:
+    selected_relevant_feature2 = bet_features + avg_team_preformance + selected_team_attributes + selected_season_league_attributes + game_result
     features_to_normilize = set(selected_relevant_feature2) - set(game_result)
     home_col = df_match[score_home_players]
     df_match['avg_home_preformance'] = df_match[score_home_players].mean(axis='columns')
@@ -102,7 +108,7 @@ def main():
     # full_df = pn.read_csv("./files/df_full.csv")
     print("Logic Rec: \n")
     x = lr.modelLogicReg(full_df)
-    print("KNN: \n")
+    print("\n KNN: \n")
     kn.knn_model(full_df)
 
 
