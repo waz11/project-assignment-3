@@ -17,7 +17,7 @@ def main():
     player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
     team = ReadData.get_table("SELECT * FROM Team")
     df_league = ReadData.get_table("SELECT * FROM League")
-    # team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
+    team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
 
     # calculated score performance of players - mean for each player
     selected_player_attributes = ['overall_rating']
@@ -28,13 +28,11 @@ def main():
     away_players = ['away_player_' + str(x + 1) for x in range(11)]
     score_home_players = ['overall_rating' + str(x + 1) + '_home' for x in range(11)]
     score_away_players = ['overall_rating' + str(x + 1) + '_away' for x in range(11)]
-    # other_features = ['id', 'country_id', 'league_id', 'season', 'home_team_api_id', 'away_team_api_id', 'match_api_id','home_team_goal', 'away_team_goal']
-    other_features = ['id', 'country_id', 'league_id', 'home_team_api_id', 'away_team_api_id', 'match_api_id',
-                      'home_team_goal', 'away_team_goal']
+    other_features = ['id', 'country_id', 'league_id', 'season', 'home_team_api_id', 'away_team_api_id', 'match_api_id','home_team_goal', 'away_team_goal']
     bet_features = ['B365H', 'B365D', 'B365A']
-    # teams_names = ['home_team', 'away_team']
+    teams_names = ['home_team', 'away_team']
     game_result = ['home_team_goal', 'away_team_goal', 'result']
-    # selected_season_league_attributes = ['league_name', 'season']
+    selected_season_league_attributes = ['league_name', 'season']
     selected_match_feature = home_players + away_players + other_features + bet_features
 
     # selected_team_attributes = ['home_team', 'away_team', 'home_team_goal','away_team_goal', 'result',
@@ -62,13 +60,33 @@ def main():
                                   suffixes=(None, str(idx + 1) + '_away'))
     df_match = df_match.rename(columns={'overall_rating': 'overall_rating1_away'}, inplace=False)
 
-    # add the teams long names to the dataframe
-    df_team_info = team[['team_api_id', 'team_long_name']]
-    df_match = df_match.merge(df_team_info, left_on='home_team_api_id', right_on='team_api_id')
-    df_match = df_match.rename(columns={'team_long_name': 'home_team'}, inplace=False)
+    avg_team_preformance = ['avg_home_preformance', 'avg_away_preformance']
+    selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
+    features_to_normilize = set(selected_relevant_feature2) - set(game_result) - set(selected_season_league_attributes)
+    home_col = df_match[score_home_players]
+    df_match['avg_home_preformance'] = df_match[score_home_players].mean(axis='columns')
+    df_match['avg_away_preformance'] = df_match[score_away_players].mean(axis='columns')
 
-    df_match = df_match.merge(df_team_info, left_on='away_team_api_id', right_on='team_api_id')
-    df_match = df_match.rename(columns={'team_long_name': 'away_team'}, inplace=False)
+    df_match = df_match.drop_duplicates()
+
+    df_to_normilize = df_match[list(features_to_normilize)]
+    df_after_normilize = pn.DataFrame()
+    for col in df_to_normilize.columns:
+        df_after_normilize[col] = (df_to_normilize[col] - df_to_normilize[col].min()) / (
+                    df_to_normilize[col].max() - df_to_normilize[col].min())
+
+    # non_norm = 'result'
+    non_norm = selected_season_league_attributes
+    non_norm.append('result')
+    df_non_norm = df_match[non_norm]
+    full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
+    # add the teams long names to the dataframe
+    # df_team_info = team[['team_api_id', 'team_long_name']]
+    # df_match = df_match.merge(df_team_info, left_on='home_team_api_id', right_on='team_api_id')
+    # df_match = df_match.rename(columns={'team_long_name': 'home_team'}, inplace=False)
+
+    # df_match = df_match.merge(df_team_info, left_on='away_team_api_id', right_on='team_api_id')
+    # df_match = df_match.rename(columns={'team_long_name': 'away_team'}, inplace=False)
 
     # add the league name to the dataframe
     # df_league_info = df_league[['id', 'name']]
@@ -87,24 +105,20 @@ def main():
     # 'defencePressure':'defencePressureAway'}, inplace=False)
 
     # selected_relevant_feature2 = score_home_players + score_away_players + selected_season_league_attributes + bet_features + teams_names + game_result
-    selected_relevant_feature2 = score_home_players + score_away_players + bet_features + game_result
     # features_to_normilize = set(selected_relevant_feature2) - set(selected_season_league_attributes) - set(game_result) - set(teams_names)
-    features_to_normilize = set(selected_relevant_feature2) - set(game_result)
-
-    df_match = df_match[selected_relevant_feature2].drop_duplicates()
-    df_to_normilize = df_match[list(features_to_normilize)]
-    df_after_normilize = pn.DataFrame()
-    for col in df_to_normilize.columns:
-        df_after_normilize[col] = (df_to_normilize[col] - df_to_normilize[col].min()) / (df_to_normilize[col].max() - df_to_normilize[col].min())
+    # df_match = df_match[selected_relevant_feature2].drop_duplicates()
+    # df_to_normilize = df_match[list(features_to_normilize)]
+    # df_after_normilize = pn.DataFrame()
+    # for col in df_to_normilize.columns:
+    #     df_after_normilize[col] = (df_to_normilize[col] - df_to_normilize[col].min()) / (df_to_normilize[col].max() - df_to_normilize[col].min())
 
     # non_norm = selected_season_league_attributes+game_result+teams_names
-    non_norm = game_result
-    df_non_norm = df_match[non_norm]
-    full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
+    # df_non_norm = df_match[non_norm]
+    # full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
     # print(full_df)
-    full_df.to_csv("./files/df_full.csv")
-
-    print(knnModel.knn_model(full_df))
+    full_df.to_csv("./files/df_full_with season.csv", index=False)
+    knn_model = knnModel.knn_model(full_df)
+    print(knn_model)
     # evaluate = logisticRegressionModel.modelLogicReg(full_df)
     # print(evaluate)
 
