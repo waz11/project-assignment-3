@@ -1,6 +1,8 @@
 import Data as ReadData
 import pandas as pn
 import numpy as np
+import knnModel
+
 # import logisticRegressionModel
 # import  turicreate as tc
 # from sklearn.feature_selection import SelectKBest
@@ -95,6 +97,8 @@ def main():
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
     # print(full_df)
     full_df.to_csv("./files/df_full.csv")
+    knn_model = knnModel.knn_model(full_df)
+    print(knn_model)
     # evaluate = logisticRegressionModel.modelLogicReg(full_df)
     # print(evaluate)
 
