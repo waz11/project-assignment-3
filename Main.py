@@ -44,6 +44,7 @@ def main():
     df_match = df_match.copy()
     df_match['result'] = np.select(conditions, result)
 
+
     # add for each match the performance score of the home and the away players
     for idx, player in enumerate(home_players):
         df_match = df_match.merge(mean_rating, left_on=player, right_on='player_api_id',
