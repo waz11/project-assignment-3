@@ -1,23 +1,22 @@
-import Data as ReadData
+import ReadData
 import pandas as pn
 import numpy as np
 # import logisticRegressionModel
 # import  turicreate as tc
-# from sklearn.feature_selection import SelectKBest
-# from sklearn.feature_selection import chi2
-# from sklearn import preprocessing
+from sklearn.feature_selection import SelectKBest
+from sklearn import preprocessing
+import logisticRegressionModel as lr
+
 
 def main():
-
     # load tables
     match = ReadData.get_table("select * from Match")
-    # " where season != '2015/2016'")
     player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
     team = ReadData.get_table("SELECT * FROM Team")
     df_league = ReadData.get_table("SELECT * FROM League")
-    # team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
+    team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
 
-    # calculated score performance of players - mean for each player
+    # calculated score performance  of players
     selected_player_attributes = ['overall_rating']
     mean_rating = player_attributes.groupby('player_api_id')[selected_player_attributes].mean()
 
@@ -30,13 +29,11 @@ def main():
     bet_features = ['B365H', 'B365D', 'B365A']
     teams_names = ['home_team', 'away_team']
     game_result = ['home_team_goal', 'away_team_goal', 'result']
-    selected_season_league_attributes = ['league_name', 'season']
+    # selected_season_league_attributes = ['league_name', 'season']
+    selected_season_league_attributes = ['season']
     selected_match_feature = home_players + away_players + other_features + bet_features
 
-    # selected_team_attributes = ['home_team', 'away_team', 'home_team_goal','away_team_goal', 'result',
-    # 'buildUpPlaySpeedHome', 'buildUpPlayPassingHome', 'defencePressureHome', 'buildUpPlaySpeedAway',
-    # 'buildUpPlayPassingAway', 'defencePressureAway'] selected_relevant_feature = score_home_players +
-    # score_away_players + selected_team_attributes + selected_season_league_attributes + bet_features
+
     df_match = match[selected_match_feature]
 
     # create new column : result  ->  home_team_win=1,  draw=0,  home_team_lose=-1
@@ -58,54 +55,29 @@ def main():
                                   suffixes=(None, str(idx + 1) + '_away'))
     df_match = df_match.rename(columns={'overall_rating': 'overall_rating1_away'}, inplace=False)
 
-    # add the teams long names to the dataframe
-    df_team_info = team[['team_api_id', 'team_long_name']]
-    df_match = df_match.merge(df_team_info, left_on='home_team_api_id', right_on='team_api_id')
-    df_match = df_match.rename(columns={'team_long_name': 'home_team'}, inplace=False)
 
-    df_match = df_match.merge(df_team_info, left_on='away_team_api_id', right_on='team_api_id')
-    df_match = df_match.rename(columns={'team_long_name': 'away_team'}, inplace=False)
 
-    # add the league name to the dataframe
-    df_league_info = df_league[['id', 'name']]
-    df_match = df_match.merge(df_league_info, left_on='league_id', right_on='id')
-    df_match = df_match.rename(columns={'name': 'league_name'}, inplace=False)
-
-    # add team attribues
-    #     df_team_info = team_attributes[['team_api_id','buildUpPlaySpeed','buildUpPlayPassing','defencePressure']]
-    #
-    # df_match = df_match.merge(df_team_info,left_on='home_team_api_id', right_on='team_api_id') df_match =
-    # df_match.rename(columns={'buildUpPlaySpeed':'buildUpPlaySpeedHome','buildUpPlayPassing':'buildUpPlayPassingHome',
-    # 'defencePressure':'defencePressureHome'}, inplace=False)
-    #
-    # df_match = df_match.merge(df_team_info,left_on='away_team_api_id', right_on='team_api_id') df_match =
-    # df_match.rename(columns={'buildUpPlaySpeed':'buildUpPlaySpeedAway','buildUpPlayPassing':'buildUpPlayPassingAway',
-    # 'defencePressure':'defencePressureAway'}, inplace=False)
-
-    selected_relevant_feature2 = score_home_players + score_away_players + selected_season_league_attributes + bet_features + teams_names + game_result
-    features_to_normilize = set(selected_relevant_feature2) - set(selected_season_league_attributes) - set(game_result) - set(teams_names)
-    df_match = df_match[selected_relevant_feature2].drop_duplicates()
+    avg_team_preformance = ['avg_home_preformance','avg_away_preformance']
+    selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
+    features_to_normilize = set(selected_relevant_feature2) - set(game_result)
+    home_col = df_match[score_home_players]
+    df_match['avg_home_preformance'] = df_match[score_home_players].mean(axis='columns')
+    df_match['avg_away_preformance'] = df_match[score_away_players].mean(axis='columns')
+    df_match['season'] = df_match['season'].apply(lambda x: int(x.split('/')[1][2:]))
+    df_match = df_match.drop_duplicates()
     df_to_normilize = df_match[list(features_to_normilize)]
     df_after_normilize = pn.DataFrame()
     for col in df_to_normilize.columns:
         df_after_normilize[col] = (df_to_normilize[col] - df_to_normilize[col].min()) / (df_to_normilize[col].max() - df_to_normilize[col].min())
 
-    non_norm = selected_season_league_attributes+game_result+teams_names
+    # non_norm = 'result'
+    non_norm = ['result']
     df_non_norm = df_match[non_norm]
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
-    # print(full_df)
-    full_df.to_csv("./files/df_full.csv")
-    # evaluate = logisticRegressionModel.modelLogicReg(full_df)
-    # print(evaluate)
 
-
-    # player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
-    # player = ReadData.get_table("SELECT * FROM Player")
-    # df = pn.concat([player, player_attributes], 1)
-    # query = ReadData.get_table("SELECT * FROM Player, Player_Attributes WHERE Player.player_api_id == Player_Attributes.player_api_id")
-    # dfPlayers = pn.DataFrame(query)
-    #
-    # dfPlayers.to_csv("./files/dfPlayers.csv")
+    full_df.to_csv("./files/df_full_with_season.csv",index=False)
+    # full_df = pn.read_csv("./files/df_full.csv")
+    x = lr.modelLogicReg(full_df)
 
 
 

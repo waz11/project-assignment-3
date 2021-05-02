@@ -10,7 +10,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 
 import  numpy as np
-import ReadData
+import Data as ReadData
 from sklearn import metrics
 def modelLogicReg(df):
     features_x = set(df.columns) - set(['result'])
