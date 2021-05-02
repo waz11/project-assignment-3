@@ -24,10 +24,11 @@ def knn_model(df):
     accuracy = knn.score(x_test, y_test)
 
     print("Accuracy KNN: ",accuracy)
-    # print(kneighbors_graph(X=None, n_neighbors=None, mode='connectivity'))
 
     # train model with cv of 5
     cv_scores = cross_val_score(knn, x, y, cv=5)
     # print each cv score (accuracy) and average them
     print(cv_scores)
     print('cv_scores mean:{}'.format(np.mean(cv_scores)))
+
+    print(kneighbors_graph(X=None, n_neighbors=None, mode='connectivity'))
