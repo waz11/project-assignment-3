@@ -97,8 +97,8 @@ def main():
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
     # print(full_df)
     full_df.to_csv("./files/df_full.csv")
-    knn_model = knnModel.knn_model(full_df)
-    print(knn_model)
+
+    print(knnModel.knn_model(full_df))
     # evaluate = logisticRegressionModel.modelLogicReg(full_df)
     # print(evaluate)
 
