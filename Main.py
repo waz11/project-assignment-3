@@ -1,4 +1,4 @@
-import ReadData
+import Data as ReadData
 import pandas as pn
 import numpy as np
 # import logisticRegressionModel
@@ -6,15 +6,30 @@ import numpy as np
 from sklearn.feature_selection import SelectKBest
 from sklearn import preprocessing
 import logisticRegressionModel as lr
+import knnModel as kn
+
 
 
 def main():
     # load tables
-    match = ReadData.get_table("select * from Match")
+    # match = ReadData.get_table("select * from Match")
+    match = ReadData.get_table("SELECT Match.*,HomeTeam.buildUpPlayDribbling AS Home_Team_buildUpPlayDribbling, \
+    HomeTeam.buildUpPlayPassing AS Home_Team_buildUpPlayPassing, HomeTeam.buildUpPlaySpeed AS Home_Team_buildUpPlaySpeed,\
+    HomeTeam.chanceCreationCrossing AS Home_Team_chanceCreationCrossing ,HomeTeam.chanceCreationPassing AS Home_Team_chanceCreationPassing,\
+    HomeTeam.chanceCreationShooting AS Home_Team_chanceCreationShooting,HomeTeam.defenceAggression AS Home_Team_defenceAggression,\
+    HomeTeam.defencePressure AS Home_Team_defencePressure,HomeTeam.defenceTeamWidth AS Home_Team_defenceTeamWidth,\
+    AwayTeam.buildUpPlayDribbling AS Away_Team_buildUpPlayDribbling, AwayTeam.buildUpPlayPassing AS Away_Team_buildUpPlayPassing,\
+    AwayTeam.buildUpPlaySpeed AS Away_Team_buildUpPlaySpeed, AwayTeam.chanceCreationCrossing AS Away_Team_chanceCreationCrossing,\
+    AwayTeam.chanceCreationPassing AS Away_Team_chanceCreationPassing,AwayTeam.chanceCreationShooting AS Away_Team_chanceCreationShooting,\
+    AwayTeam.defenceAggression AS Away_Team_defenceAggression,AwayTeam.defencePressure AS Away_Team_defencePressure,\
+    AwayTeam.defenceTeamWidth AS Away_Team_defenceTeamWidth\
+    FROM Match LEFT JOIN Team_Attributes AS HomeTeam ON HomeTeam.team_api_id = Match.home_team_api_id\
+    LEFT JOIN Team_Attributes as AwayTeam ON AwayTeam.team_api_id = Match.away_team_api_id")
     player_attributes = ReadData.get_table("SELECT * FROM Player_Attributes")
-    team = ReadData.get_table("SELECT * FROM Team")
-    df_league = ReadData.get_table("SELECT * FROM League")
-    team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
+    print(len(match))
+    # team = ReadData.get_table("SELECT * FROM Team")
+    # df_league = ReadData.get_table("SELECT * FROM League")
+    # team_attributes = ReadData.get_table("SELECT * FROM Team_Attributes")
 
     # calculated score performance  of players
     selected_player_attributes = ['overall_rating']
@@ -30,6 +45,7 @@ def main():
     teams_names = ['home_team', 'away_team']
     game_result = ['home_team_goal', 'away_team_goal', 'result']
     # selected_season_league_attributes = ['league_name', 'season']
+    # Delete Season Here:
     selected_season_league_attributes = ['season']
     selected_match_feature = home_players + away_players + other_features + bet_features
 
@@ -56,10 +72,16 @@ def main():
                                   suffixes=(None, str(idx + 1) + '_away'))
     df_match = df_match.rename(columns={'overall_rating': 'overall_rating1_away'}, inplace=False)
 
+    selected_team_attributes = ['home_team', 'away_team', 'home_team_goal','away_team_goal', 'result', \
+    'buildUpPlaySpeedHome', 'buildUpPlayPassingHome', 'defencePressureHome', 'buildUpPlaySpeedAway',
+    'buildUpPlayPassingAway', 'defencePressureAway']
+
 
 
     avg_team_preformance = ['avg_home_preformance','avg_away_preformance']
+    # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result
     selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
+    # selected_relevant_feature2 = bet_features + avg_team_preformance + selected_team_attributes + selected_season_league_attributes + game_result
     features_to_normilize = set(selected_relevant_feature2) - set(game_result)
     home_col = df_match[score_home_players]
     df_match['avg_home_preformance'] = df_match[score_home_players].mean(axis='columns')
@@ -78,7 +100,10 @@ def main():
 
     full_df.to_csv("./files/df_full_with_season.csv",index=False)
     # full_df = pn.read_csv("./files/df_full.csv")
+    print("Logic Rec: \n")
     x = lr.modelLogicReg(full_df)
+    print("KNN: \n")
+    kn.knn_model(full_df)
 
 
 
