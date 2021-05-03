@@ -1,5 +1,6 @@
+import numpy as np
 import sklearn.svm as svm
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 
 def modelSVM(train_test_list):
 
@@ -16,5 +17,10 @@ def modelSVM(train_test_list):
     accuracy = clf.score(x_test, y_test)
 
     print('Accuracy: %s' %(accuracy))
-    # check accuracy of our model on the test data
-    # accuracy = clf.
+
+    # train model with cv of 5
+    cv_scores = cross_val_score(clf, x_test, y_test, cv=5)
+    # print each cv score (accuracy) and average them
+    print("cv_scores:")
+    print(cv_scores)
+    print('cv_scores mean:{}'.format(np.mean(cv_scores)))
