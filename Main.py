@@ -8,6 +8,7 @@ from sklearn import preprocessing
 import logisticRegressionModel as lr
 import knnModel as kn
 import SVM as svm
+import NaiveBayes as nb
 
 
 
@@ -119,17 +120,36 @@ def main():
     non_norm = ['result']
     df_non_norm = df_match[non_norm]
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
+    print("Before Dropping: ")
+    print(full_df.shape)
+
+
+    #******************************Delete Outlier Data:*********************************************
+    id_to_delete = []
+    for col in full_df:
+        colData = full_df[col]
+        id_to_delete += full_df[(np.abs(colData - colData.mean()) > (2.5 * colData.std()))].index.values.tolist()
+    full_df = full_df.drop(full_df.index[id_to_delete])
+
+    print("After Dropping: ")
+    print(full_df.shape)
 
     full_df.to_csv("./files/df_full_with_season.csv",index=False)
     # full_df = pn.read_csv("./files/df_full.csv")
+
+    #Models:
+    #
     print("Logic Rec: \n")
     lr.modelLogicReg(full_df)
     print("\n KNN: \n")
     kn.knn_model(full_df)
     print("\n SVM - SVC: \n")
     svm.modelSVM(full_df)
+    print("\n Naive-Bayes: \n")
+    nb.naive_bayes(full_df)
 
 
 
 if __name__ == "__main__":
     main()
+
