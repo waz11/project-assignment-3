@@ -12,7 +12,7 @@ def knn_model(df):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)  # , stratify=y
 
     # Create KNN classifier
-    knn = KNeighborsClassifier(n_neighbors=5, weights='uniform')
+    knn = KNeighborsClassifier(n_neighbors=55, weights='uniform')
 
     # Fit the classifier to the data
     knn.fit(x_train, y_train)

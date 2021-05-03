@@ -123,7 +123,7 @@ def main():
     full_df.to_csv("./files/df_full_with_season.csv",index=False)
     # full_df = pn.read_csv("./files/df_full.csv")
     print("Logic Rec: \n")
-    x = lr.modelLogicReg(full_df)
+    lr.modelLogicReg(full_df)
     print("\n KNN: \n")
     kn.knn_model(full_df)
     print("\n SVM - SVC: \n")
