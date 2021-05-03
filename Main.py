@@ -140,13 +140,13 @@ def main():
     #Models:
     #
     print("Logic Rec: \n")
-    lr.modelLogicReg(full_df)
+    # lr.modelLogicReg(full_df)
     print("\n KNN: \n")
     kn.knn_model(full_df)
     print("\n SVM - SVC: \n")
-    svm.modelSVM(full_df)
+    # svm.modelSVM(full_df)
     print("\n Naive-Bayes: \n")
-    nb.naive_bayes(full_df)
+    # nb.naive_bayes(full_df)
 
 
 
