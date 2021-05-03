@@ -6,12 +6,11 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 import  numpy as np
 import Data as ReadData
 from sklearn import metrics
-def modelLogicReg(df):
-    features_x = set(df.columns) - set(['result'])
+def modelLogicReg(train_test_list):
 
-    X = df[list(features_x)]
-    Y = df['result']
-    x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2, random_state=100)
+    # split dataset into train and test data
+    x_train, x_test, y_train, y_test = train_test_list
+
     # print((y_test))
     gnb = LogisticRegression(max_iter=1000)
     clf = gnb.fit(x_train,y_train)

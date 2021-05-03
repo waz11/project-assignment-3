@@ -5,6 +5,7 @@ import logisticRegressionModel as lr
 import knnModel as kn
 import SVM as svm
 import NaiveBayes as nb
+from sklearn.model_selection import train_test_split
 
 
 
@@ -116,7 +117,7 @@ def main():
     non_norm = ['result']
     df_non_norm = df_match[non_norm]
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
-
+    print("Data Size:")
     print("Before Dropping: ")
     print(full_df.shape)
 
@@ -139,59 +140,77 @@ def main():
     # full_df.to_csv("./files/df_full_with_season.csv",index=False)
     # full_df = pn.read_csv("./files/df_full.csv")
 
-    print("Data with outlier data with team attributes: ")
+
+
+    # ************************Models:***************************
+
+    print('\n')
 
     #Models:
-    #
+
+    train_test_list = train_test(full_df_with_outlier)
+    print("Data with outlier data with team attributes: ")
     print("Logic Rec: \n")
-    lr.modelLogicReg(full_df_with_outlier)
+    lr.modelLogicReg(train_test_list)
     print("\n KNN: \n")
-    kn.knn_model(full_df_with_outlier)
+    kn.knn_model(train_test_list)
     print("\n SVM - SVC: \n")
-    svm.modelSVM(full_df_with_outlier)
+    svm.modelSVM(train_test_list)
     print("\n Naive-Bayes: \n")
-    nb.naive_bayes(full_df_with_outlier)
+    nb.naive_bayes(train_test_list)
 
     print('\n')
 
 
     print("Data with outlier data without team attributes: ")
-
+    train_test_list = train_test(full_df_with_outlier_without_team_attribute)
     print("Logic Rec: \n")
-    lr.modelLogicReg(full_df_with_outlier_without_team_attribute)
+    lr.modelLogicReg(train_test_list)
     print("\n KNN: \n")
-    kn.knn_model(full_df_with_outlier_without_team_attribute)
+    kn.knn_model(train_test_list)
     print("\n SVM - SVC: \n")
-    svm.modelSVM(full_df_with_outlier_without_team_attribute)
+    svm.modelSVM(train_test_list)
     print("\n Naive-Bayes: \n")
-    nb.naive_bayes(full_df_with_outlier_without_team_attribute)
+    nb.naive_bayes(train_test_list)
 
     print('\n')
 
     print("Data without outlier data , with team attributes: ")
-
+    train_test_list = train_test(full_df_without_outlier)
     print("Logic Rec: \n")
-    lr.modelLogicReg(full_df_without_outlier)
+    lr.modelLogicReg(train_test_list)
     print("\n KNN: \n")
-    kn.knn_model(full_df_without_outlier)
+    kn.knn_model(train_test_list)
     print("\n SVM - SVC: \n")
-    svm.modelSVM(full_df_without_outlier)
+    svm.modelSVM(train_test_list)
     print("\n Naive-Bayes: \n")
-    nb.naive_bayes(full_df_without_outlier)
+    nb.naive_bayes(train_test_list)
 
     print('\n')
-
+    train_test_list = train_test(full_df_without_outlier_without_team_attribute)
     print("Data without outlier data , without team attributes: ")
     print("Logic Rec: \n")
-    lr.modelLogicReg(full_df_without_outlier_without_team_attribute)
+    lr.modelLogicReg(train_test_list)
     print("\n KNN: \n")
-    kn.knn_model(full_df_without_outlier_without_team_attribute)
+    kn.knn_model(train_test_list)
     print("\n SVM - SVC: \n")
-    svm.modelSVM(full_df_without_outlier_without_team_attribute)
+    svm.modelSVM(train_test_list)
     print("\n Naive-Bayes: \n")
-    nb.naive_bayes(full_df_without_outlier_without_team_attribute)
+    nb.naive_bayes(train_test_list)
+
+
+
+
+
+def train_test(df):
+    training_features = set(df.columns) - set(['result'])
+    x = df[list(training_features)]
+    y = df['result']
+
+    # split dataset into train and test data
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
+    return [x_train, x_test, y_train, y_test]
 
 
 if __name__ == "__main__":
     main()
-

@@ -1,14 +1,12 @@
-from sklearn.model_selection import train_test_split
+
 from sklearn.naive_bayes import GaussianNB
 
 
-def naive_bayes(df):
-    training_features = set(df.columns) - set(['result'])
-    x = df[list(training_features)]
-    y = df['result']
+def naive_bayes(train_test_list):
+
 
     # split dataset into train and test data
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_list
 
     # Create gnb classifier
     gnb = GaussianNB()
