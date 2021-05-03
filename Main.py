@@ -1,10 +1,6 @@
 import Data as ReadData
 import pandas as pn
 import numpy as np
-# import logisticRegressionModel
-# import  turicreate as tc
-from sklearn.feature_selection import SelectKBest
-from sklearn import preprocessing
 import logisticRegressionModel as lr
 import knnModel as kn
 import SVM as svm
@@ -67,9 +63,9 @@ def main():
                                 'Away_Team_defencePressure', 'Away_Team_defenceTeamWidth']
 
     #Team Attributes:
-    # selected_match_feature = home_players + away_players + other_features + bet_features + selected_team_attributes
+    selected_match_feature = home_players + away_players + other_features + bet_features + selected_team_attributes
 
-    selected_match_feature = home_players + away_players + other_features + bet_features
+    # selected_match_feature = home_players + away_players + other_features + bet_features
 
     df_match = match[selected_match_feature]
 
@@ -100,10 +96,10 @@ def main():
     # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result
 
     # Old One:
-    selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
+    # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
 
     #Team Attributes:
-    # selected_relevant_feature2 = bet_features + avg_team_preformance + selected_team_attributes + selected_season_league_attributes + game_result
+    selected_relevant_feature2 = bet_features + avg_team_preformance + selected_team_attributes + selected_season_league_attributes + game_result
 
     features_to_normilize = set(selected_relevant_feature2) - set(game_result)
     home_col = df_match[score_home_players]
@@ -120,9 +116,12 @@ def main():
     non_norm = ['result']
     df_non_norm = df_match[non_norm]
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
+
     print("Before Dropping: ")
     print(full_df.shape)
 
+    full_df_with_outlier = full_df
+    full_df_with_outlier_without_team_attribute = full_df.drop(columns=selected_team_attributes,axis=1)
 
     #******************************Delete Outlier Data:*********************************************
     id_to_delete = []
@@ -131,23 +130,66 @@ def main():
         id_to_delete += full_df[(np.abs(colData - colData.mean()) > (2.5 * colData.std()))].index.values.tolist()
     full_df = full_df.drop(full_df.index[id_to_delete])
 
+    full_df_without_outlier = full_df
+    full_df_without_outlier_without_team_attribute = full_df.drop(selected_team_attributes,axis=1)
+
     print("After Dropping: ")
     print(full_df.shape)
 
-    full_df.to_csv("./files/df_full_with_season.csv",index=False)
+    # full_df.to_csv("./files/df_full_with_season.csv",index=False)
     # full_df = pn.read_csv("./files/df_full.csv")
+
+    print("Data with outlier data with team attributes: ")
 
     #Models:
     #
     print("Logic Rec: \n")
-    # lr.modelLogicReg(full_df)
+    lr.modelLogicReg(full_df_with_outlier)
     print("\n KNN: \n")
-    kn.knn_model(full_df)
+    kn.knn_model(full_df_with_outlier)
     print("\n SVM - SVC: \n")
-    # svm.modelSVM(full_df)
+    svm.modelSVM(full_df_with_outlier)
     print("\n Naive-Bayes: \n")
-    # nb.naive_bayes(full_df)
+    nb.naive_bayes(full_df_with_outlier)
 
+    print('\n')
+
+
+    print("Data with outlier data without team attributes: ")
+
+    print("Logic Rec: \n")
+    lr.modelLogicReg(full_df_with_outlier_without_team_attribute)
+    print("\n KNN: \n")
+    kn.knn_model(full_df_with_outlier_without_team_attribute)
+    print("\n SVM - SVC: \n")
+    svm.modelSVM(full_df_with_outlier_without_team_attribute)
+    print("\n Naive-Bayes: \n")
+    nb.naive_bayes(full_df_with_outlier_without_team_attribute)
+
+    print('\n')
+
+    print("Data without outlier data , with team attributes: ")
+
+    print("Logic Rec: \n")
+    lr.modelLogicReg(full_df_without_outlier)
+    print("\n KNN: \n")
+    kn.knn_model(full_df_without_outlier)
+    print("\n SVM - SVC: \n")
+    svm.modelSVM(full_df_without_outlier)
+    print("\n Naive-Bayes: \n")
+    nb.naive_bayes(full_df_without_outlier)
+
+    print('\n')
+
+    print("Data without outlier data , without team attributes: ")
+    print("Logic Rec: \n")
+    lr.modelLogicReg(full_df_without_outlier_without_team_attribute)
+    print("\n KNN: \n")
+    kn.knn_model(full_df_without_outlier_without_team_attribute)
+    print("\n SVM - SVC: \n")
+    svm.modelSVM(full_df_without_outlier_without_team_attribute)
+    print("\n Naive-Bayes: \n")
+    nb.naive_bayes(full_df_without_outlier_without_team_attribute)
 
 
 if __name__ == "__main__":

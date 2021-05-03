@@ -1,11 +1,5 @@
 from  sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier,GradientBoostingClassifier
+# from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier,GradientBoostingClassifier
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 

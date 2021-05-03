@@ -1,4 +1,3 @@
-from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 
@@ -14,8 +13,12 @@ def naive_bayes(df):
     # Create gnb classifier
     gnb = GaussianNB()
 
-    y_pred = gnb.fit(x_train, y_train).predict(x_test)
+    # Fit the classifier to the data
+    gnb.fit(x_train, y_train)
 
-    total = x_test.shape[0]
-    correct = (y_test == y_pred).sum()
-    print('Accuracy: %s' % (correct / total))
+    # total = x_test.shape[0]
+    # correct = (y_test == y_pred).sum()
+
+    accuracy = gnb.score(x_test, y_test)
+
+    print('Accuracy: %s' % (accuracy))

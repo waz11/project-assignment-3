@@ -1,7 +1,4 @@
 import sklearn.svm as svm
-import  numpy as np
-import Data as ReadData
-from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 
 def modelSVM(df):
