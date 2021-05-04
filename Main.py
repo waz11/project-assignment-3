@@ -1,3 +1,5 @@
+import operator
+from sklearn.feature_selection import VarianceThreshold
 import Data as ReadData
 import pandas as pn
 import numpy as np
@@ -140,6 +142,35 @@ def main():
     # full_df.to_csv("./files/df_full_with_season.csv",index=False)
     # full_df = pn.read_csv("./files/df_full.csv")
 
+    # full_df.drop('result', axis=1).apply(lambda x: x.corr(full_df.result))
+    #
+    corr_dict = {}
+    for col in full_df.columns:
+        corr_dict[col] = np.corrcoef(full_df[col], full_df['result'])[1][0]
+    sorted_d = sorted(corr_dict.items(), key=operator.itemgetter(1), reverse=True)
+    choose_features = [key for key,val in corr_dict.items() if val>0.1]
+    new_df = full_df[choose_features]
+    # print(full_df)
+
+
+    # X = full_df
+    # sel = VarianceThreshold(threshold=(.1 * (1 - .1)))
+    # print(sel.fit_transform(X))
+
+
+    new_df.to_csv("./files/new_df.csv", index=False)
+
+    train_test_list = train_test(new_df)
+    print("Data with new data with team attributes: ")
+    print("Logic Rec: \n")
+    lr.modelLogicReg(train_test_list)
+    print("\n KNN: \n")
+    kn.knn_model(train_test_list)
+    print("\n SVM - SVC: \n")
+    svm.modelSVM(train_test_list)
+    print("\n Naive-Bayes: \n")
+    nb.naive_bayes(train_test_list)
+
 
 
     # ************************Models:***************************
@@ -147,7 +178,7 @@ def main():
     print('\n')
 
     #Models:
-
+    '''
     train_test_list = train_test(full_df_with_outlier)
     print("Data with outlier data with team attributes: ")
     print("Logic Rec: \n")
@@ -197,6 +228,7 @@ def main():
     svm.modelSVM(train_test_list)
     print("\n Naive-Bayes: \n")
     nb.naive_bayes(train_test_list)
+    '''
 
 
 

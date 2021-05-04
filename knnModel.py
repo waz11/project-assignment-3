@@ -38,5 +38,6 @@ def knn_model(train_test_list):
     print(cv_scores)
     print('cv_scores mean:{}'.format(np.mean(cv_scores)))
 
+
     # sklearn.neighbors.kneighbors_graph(x, n_neighbors=55, mode='connectivity')
     # print(kneighbors_graph(X=None, n_neighbors=None, mode='connectivity'))
