@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import operator
 import seaborn as sns
-from sklearn.feature_selection import VarianceThreshold
 import Data as ReadData
 import pandas as pn
 import numpy as np
@@ -16,8 +14,6 @@ from sklearn.model_selection import train_test_split
 def main():
     # load tables
 
-    # Regular Table:
-    # match = ReadData.get_table("select * from Match")
     # Big Table:
     match = ReadData.get_table("SELECT Match.*,AVG(HomeTeam.buildUpPlayDribbling) AS Home_Team_buildUpPlayDribbling,\
     AVG(HomeTeam.buildUpPlayPassing) AS Home_Team_buildUpPlayPassing, AVG(HomeTeam.buildUpPlaySpeed) AS Home_Team_buildUpPlaySpeed,\
@@ -50,7 +46,6 @@ def main():
     bet_features = ['B365H', 'B365D', 'B365A']
     teams_names = ['home_team', 'away_team']
     game_result = ['home_team_goal', 'away_team_goal', 'result']
-    # selected_season_league_attributes = ['league_name', 'season']
 
     # Delete Season Here:
     selected_season_league_attributes = ['season']
@@ -94,20 +89,13 @@ def main():
                                   suffixes=(None, str(idx + 1) + '_away'))
     df_match = df_match.rename(columns={'overall_rating': 'overall_rating1_away'}, inplace=False)
 
-
-
     avg_team_preformance = ['avg_home_preformance','avg_away_preformance']
-    #without season:
-    # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result
-
-    # Old One:
-    # selected_relevant_feature2 = bet_features + avg_team_preformance + game_result + selected_season_league_attributes
 
     #Team Attributes:
     selected_relevant_feature2 = bet_features + avg_team_preformance + selected_team_attributes + selected_season_league_attributes + game_result
 
+    # Normalize Data:
     features_to_normilize = set(selected_relevant_feature2) - set(game_result)
-    home_col = df_match[score_home_players]
     df_match['avg_home_preformance'] = df_match[score_home_players].mean(axis='columns')
     df_match['avg_away_preformance'] = df_match[score_away_players].mean(axis='columns')
     df_match['season'] = df_match['season'].apply(lambda x: int(x.split('/')[1][2:]))
@@ -116,11 +104,10 @@ def main():
     df_after_normilize = pn.DataFrame()
     for col in df_to_normilize.columns:
         df_after_normilize[col] = (df_to_normilize[col] - df_to_normilize[col].min()) / (df_to_normilize[col].max() - df_to_normilize[col].min())
-
-    # non_norm = 'result'
     non_norm = ['result']
     df_non_norm = df_match[non_norm]
     full_df = pn.concat([df_after_normilize, df_non_norm], axis=1)
+
     print("Data Size:")
     print("Before Dropping: ")
     print(full_df.shape)
@@ -150,7 +137,7 @@ def main():
     # *************************************Correlation:****************************************
     corr = full_df.corr()
     sns.heatmap(corr)
-    # plt.show()
+    plt.show()
     columns = np.full((corr.shape[0],), True, dtype=bool)
     for i in range(corr.shape[0]):
         for j in range(i + 1, corr.shape[0]):
@@ -164,41 +151,11 @@ def main():
     print(full_df.shape)
 
 
-    # ***************************What is that????????????????**************************
-    # corr_dict = {}
-    # for col in full_df.columns:
-    #     corr_dict[col] = np.corrcoef(full_df[col], full_df['result'])[1][0]
-    # sorted_d = sorted(corr_dict.items(), key=operator.itemgetter(1), reverse=True)
-    # choose_features = [key for key,val in corr_dict.items() if val>0.1]
-    # new_df = full_df[choose_features]
-    # print(full_df)
-
-
-    # X = full_df
-    # sel = VarianceThreshold(threshold=(.1 * (1 - .1)))
-    # print(sel.fit_transform(X))
-
-
-    # new_df.to_csv("./files/new_df.csv", index=False)
-    #
-    # train_test_list = train_test(new_df)
-    # print("Data with new data with team attributes: ")
-    # print("Logic Rec: \n")
-    # lr.modelLogicReg(train_test_list)
-    # print("\n KNN: \n")
-    # kn.knn_model(train_test_list)
-    # print("\n SVM - SVC: \n")
-    # svm.modelSVM(train_test_list)
-    # print("\n Naive-Bayes: \n")
-    # nb.naive_bayes(train_test_list)
-
-
-
     # ************************Models:***************************
 
     print('\n')
 
-    #Models:
+    #Data with outlier data with team attributes:
     train_test_list = train_test(full_df_with_outlier)
     print("Data with outlier data with team attributes: ")
     print("Logic Rec: \n")
@@ -212,7 +169,7 @@ def main():
 
     print('\n')
 
-
+    # Data with outlier data without team attributes:
     print("Data with outlier data without team attributes: ")
     train_test_list = train_test(full_df_with_outlier_without_team_attribute)
     print("Logic Rec: \n")
@@ -225,7 +182,7 @@ def main():
     nb.naive_bayes(train_test_list)
 
     print('\n')
-
+    # Data without outlier data , with team attributes:
     print("Data without outlier data , with team attributes: ")
     train_test_list = train_test(full_df_without_outlier)
     print("Logic Rec: \n")
@@ -238,6 +195,7 @@ def main():
     nb.naive_bayes(train_test_list)
 
     print('\n')
+    # Data without outlier data , without team attributes:
     train_test_list = train_test(full_df_without_outlier_without_team_attribute)
     print("Data without outlier data , without team attributes: ")
     print("Logic Rec: \n")
@@ -254,6 +212,9 @@ def main():
 
 
 def train_test(df):
+    '''
+    This function creates train dataset and test dataset for the models
+    '''
     training_features = set(df.columns) - set(['result'])
     x = df[list(training_features)]
     y = df['result']

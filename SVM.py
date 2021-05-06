@@ -1,7 +1,7 @@
 from sklearn.metrics import f1_score
 import numpy as np
 import sklearn.svm as svm
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import cross_val_score
 
 def modelSVM(train_test_list):
 
@@ -23,6 +23,7 @@ def modelSVM(train_test_list):
 
     # train model with cv of 5
     cv_scores = cross_val_score(clf, x_test, y_test, cv=5)
+
     # print each cv score (accuracy) and average them
     print("cv_scores:")
     print(cv_scores)

@@ -1,6 +1,5 @@
 from sklearn.metrics import f1_score
 import numpy as np
-import sklearn
 from sklearn.neighbors import *
 from sklearn.model_selection import train_test_split, cross_val_score
 
@@ -38,6 +37,3 @@ def knn_model(train_test_list):
     print(cv_scores)
     print('cv_scores mean:{}'.format(np.mean(cv_scores)))
 
-
-    # sklearn.neighbors.kneighbors_graph(x, n_neighbors=55, mode='connectivity')
-    # print(kneighbors_graph(X=None, n_neighbors=None, mode='connectivity'))
