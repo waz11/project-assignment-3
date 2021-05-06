@@ -1,4 +1,6 @@
+import matplotlib.pyplot as plt
 import operator
+import seaborn as sns
 from sklearn.feature_selection import VarianceThreshold
 import Data as ReadData
 import pandas as pn
@@ -127,29 +129,48 @@ def main():
     full_df_with_outlier_without_team_attribute = full_df.drop(columns=selected_team_attributes,axis=1)
 
     #******************************Delete Outlier Data:*********************************************
-    id_to_delete = []
+    id_to_delete_with_team_attribute = []
+    id_to_delete_without_team_attribute = []
+
+    #with team attribute:
     for col in full_df:
         colData = full_df[col]
-        id_to_delete += full_df[(np.abs(colData - colData.mean()) > (2.5 * colData.std()))].index.values.tolist()
-    full_df = full_df.drop(full_df.index[id_to_delete])
+        id_to_delete_with_team_attribute += full_df[(np.abs(colData - colData.mean()) > (2.5 * colData.std()))].index.values.tolist()
+    full_df = full_df.drop(full_df.index[id_to_delete_with_team_attribute])
+
+    # without team attribute:
+    for col in full_df_with_outlier_without_team_attribute:
+        colData = full_df_with_outlier_without_team_attribute[col]
+        id_to_delete_without_team_attribute += full_df_with_outlier_without_team_attribute[(np.abs(colData - colData.mean()) > (2.5 * colData.std()))].index.values.tolist()
+    full_df_with_outlier_without_team_attribute = full_df_with_outlier_without_team_attribute.drop(full_df_with_outlier_without_team_attribute.index[id_to_delete_without_team_attribute])
 
     full_df_without_outlier = full_df
-    full_df_without_outlier_without_team_attribute = full_df.drop(selected_team_attributes,axis=1)
+    full_df_without_outlier_without_team_attribute = full_df_with_outlier_without_team_attribute
+
+    # *************************************Correlation:****************************************
+    corr = full_df.corr()
+    sns.heatmap(corr)
+    # plt.show()
+    columns = np.full((corr.shape[0],), True, dtype=bool)
+    for i in range(corr.shape[0]):
+        for j in range(i + 1, corr.shape[0]):
+            if corr.iloc[i, j] >= 0.9:
+                if columns[j]:
+                    columns[j] = False
+    selected_columns = full_df.columns[columns]
+    full_df = full_df[selected_columns]
 
     print("After Dropping: ")
     print(full_df.shape)
 
-    # full_df.to_csv("./files/df_full_with_season.csv",index=False)
-    # full_df = pn.read_csv("./files/df_full.csv")
 
-    # full_df.drop('result', axis=1).apply(lambda x: x.corr(full_df.result))
-    #
-    corr_dict = {}
-    for col in full_df.columns:
-        corr_dict[col] = np.corrcoef(full_df[col], full_df['result'])[1][0]
-    sorted_d = sorted(corr_dict.items(), key=operator.itemgetter(1), reverse=True)
-    choose_features = [key for key,val in corr_dict.items() if val>0.1]
-    new_df = full_df[choose_features]
+    # ***************************What is that????????????????**************************
+    # corr_dict = {}
+    # for col in full_df.columns:
+    #     corr_dict[col] = np.corrcoef(full_df[col], full_df['result'])[1][0]
+    # sorted_d = sorted(corr_dict.items(), key=operator.itemgetter(1), reverse=True)
+    # choose_features = [key for key,val in corr_dict.items() if val>0.1]
+    # new_df = full_df[choose_features]
     # print(full_df)
 
 
@@ -158,18 +179,18 @@ def main():
     # print(sel.fit_transform(X))
 
 
-    new_df.to_csv("./files/new_df.csv", index=False)
-
-    train_test_list = train_test(new_df)
-    print("Data with new data with team attributes: ")
-    print("Logic Rec: \n")
-    lr.modelLogicReg(train_test_list)
-    print("\n KNN: \n")
-    kn.knn_model(train_test_list)
-    print("\n SVM - SVC: \n")
-    svm.modelSVM(train_test_list)
-    print("\n Naive-Bayes: \n")
-    nb.naive_bayes(train_test_list)
+    # new_df.to_csv("./files/new_df.csv", index=False)
+    #
+    # train_test_list = train_test(new_df)
+    # print("Data with new data with team attributes: ")
+    # print("Logic Rec: \n")
+    # lr.modelLogicReg(train_test_list)
+    # print("\n KNN: \n")
+    # kn.knn_model(train_test_list)
+    # print("\n SVM - SVC: \n")
+    # svm.modelSVM(train_test_list)
+    # print("\n Naive-Bayes: \n")
+    # nb.naive_bayes(train_test_list)
 
 
 
@@ -178,7 +199,6 @@ def main():
     print('\n')
 
     #Models:
-    '''
     train_test_list = train_test(full_df_with_outlier)
     print("Data with outlier data with team attributes: ")
     print("Logic Rec: \n")
@@ -228,7 +248,6 @@ def main():
     svm.modelSVM(train_test_list)
     print("\n Naive-Bayes: \n")
     nb.naive_bayes(train_test_list)
-    '''
 
 
 

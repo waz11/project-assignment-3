@@ -23,7 +23,7 @@ def naive_bayes(train_test_list):
     predict = gnb.predict(x_test)
 
     print('Accuracy: %s' % (accuracy))
-    print("f1 score:", f1_score(y_test, predict, average=None))
+    print("f1 score:", f1_score(y_test, predict, average="macro"))
     # train model with cv of 5
     cv_scores = cross_val_score(gnb, x_test, y_test, cv=5)
     # print each cv score (accuracy) and average them

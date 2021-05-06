@@ -29,7 +29,7 @@ def knn_model(train_test_list):
     accuracy = knn.score(x_test, y_test)
 
     print("Accuracy KNN: ",accuracy)
-    print("f1 score:", f1_score(y_test, predict, average=None))
+    print("f1 score:", f1_score(y_test, predict, average="macro"))
 
     # train model with cv of 5
     cv_scores = cross_val_score(knn, x_test, y_test, cv=5)

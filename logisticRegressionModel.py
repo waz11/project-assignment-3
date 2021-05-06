@@ -16,7 +16,7 @@ def modelLogicReg(train_test_list):
     clf = gnb.fit(x_train,y_train)
     cls = clf.predict(x_test)
     print("Accuracy:", metrics.accuracy_score(y_test, cls))
-    print("f1 score:", f1_score(y_test, cls,average=None))
+    print("f1 score:", f1_score(y_test, cls,average="macro"))
 
     # train model with cv of 5
     cv_scores = cross_val_score(clf, x_test, y_test, cv=5)
